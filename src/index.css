@@ -5,4 +5,13 @@
 
 body {
   margin: 0;
+  padding: 20px;
+  text-align: center;
+  background: #b0e8ab;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
 }
