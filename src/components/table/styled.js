@@ -9,7 +9,7 @@ export const Table = styled.div`
 `;
 
 export const Header = styled.div`
-  width: inherit;
+  width: 888px;
   height: 40px;
   padding-left: 20px;
   color: #fff;
@@ -43,7 +43,7 @@ export const Info = styled.div`
   height: 450px;
   overflow-y: scroll;
   &::-webkit-scrollbar {
-    background: #0c953f;
+    background: rgba(22, 213, 60, 1) 100%;
   }
   &::-webkit-scrollbar-thumb {
     background: #fff;
@@ -97,32 +97,33 @@ export const Search = styled(ReactComponent)`
 export const SearchBox = styled.div`
   display: ${(props) => (props.searchCountryMenu ? "flex" : "none")};
   position: absolute;
-  left: 53px;
-  top: 115px;
+  justify-content: center;
+  left: 75px;
+  top: 13px;
   align-items: center;
   padding: 10px;
   border-radius: 5px;
-  width: 230px;
+  width: 190px;
   height: 50px;
   background: #fff;
   &::after {
     content: "";
     position: absolute;
-    top: -11px;
-    left: 103px;
+    transform: rotateX(180deg);
+    top: 44px;
+    left: 80px;
     display: block;
     border-width: 0 10px 20px 10px;
     border-color: transparent transparent #fff transparent;
     border-style: solid;
   }
   > input {
-    width: 150px;
-    height: 30px;
-    margin-right: 10px;
+    width: fit-content;
+    height: 35px;
     border: 1px solid green;
     border-radius: 2px;
   }
-  > button {
+  /* > button {
     width: 50px;
     height: 30px;
     border: none;
@@ -131,5 +132,5 @@ export const SearchBox = styled.div`
     font-weight: bold;
     border-radius: 2px;
     cursor: pointer;
-  }
+  } */
 `;

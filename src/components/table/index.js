@@ -12,10 +12,9 @@ import {
 
 export const CovidTable = () => {
   const [data, setData] = useState([]);
-  const [reverse, serReverse] = useState(false);
+  const [reverse, setReverse] = useState(false);
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
   const [userCountry, setUserCountry] = useState([]);
-  console.log(userCountry);
 
   useEffect(() => {
     fetch("https://covid-19.dataflowkit.com/v1")
@@ -36,36 +35,47 @@ export const CovidTable = () => {
     );
 
   const renderCountryStat = (arr = []) =>
-    arr.map((obj) => (
-      <Country key={obj.Country_text}>
-        <div>{obj.Country_text}</div>
-        <div>
-          {obj["New Cases_text"] == 0 ? "no info" : obj["New Cases_text"]}
-        </div>
-        <div>
-          {obj["New Deaths_text"] == 0 ? "no info" : obj["New Deaths_text"]}
-        </div>
-        <div>
-          {obj["Total Cases_text"] == 0 ? "no info" : obj["Total Cases_text"]}
-        </div>
-        <div>
-          {obj["Total Deaths_text"] == 0 ? "no info" : obj["Total Deaths_text"]}
-        </div>
-        <div>{obj["Last Update"] == null ? "no info" : obj["Last Update"]}</div>
-      </Country>
-    ));
+    arr
+      .filter((obj) => {
+        if (userCountry == "") {
+          return obj;
+        } else if (obj.Country_text.toLowerCase().includes(userCountry)) {
+          return obj;
+        }
+      })
+      .map((obj) => (
+        <Country key={obj.Country_text}>
+          <div>{obj.Country_text}</div>
+          <div>
+            {obj["New Cases_text"] == 0 ? "no info" : obj["New Cases_text"]}
+          </div>
+          <div>
+            {obj["New Deaths_text"] == 0 ? "no info" : obj["New Deaths_text"]}
+          </div>
+          <div>
+            {obj["Total Cases_text"] == 0 ? "no info" : obj["Total Cases_text"]}
+          </div>
+          <div>
+            {obj["Total Deaths_text"] == 0
+              ? "no info"
+              : obj["Total Deaths_text"]}
+          </div>
+          <div>
+            {obj["Last Update"] == null ? "no info" : obj["Last Update"]}
+          </div>
+        </Country>
+      ));
 
   return (
     <Table>
-      <Triangle reverse={reverse} onClick={() => serReverse(!reverse)} />
+      <Triangle reverse={reverse} onClick={() => setReverse(!reverse)} />
       <Search onClick={() => setSearchCountryMenu(!searchCountryMenu)} />
       <SearchBox searchCountryMenu={searchCountryMenu}>
         <input
           type="text"
           placeholder="Search..."
-          onInput={(event) => setUserCountry(event.target.value.toLowerCase())}
+          onChange={(event) => setUserCountry(event.target.value.toLowerCase())}
         />
-        <button>Find</button>
       </SearchBox>
       <Header>
         <div>Country</div>
