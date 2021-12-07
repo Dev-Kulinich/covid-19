@@ -40,6 +40,15 @@ export const Info = styled.div`
   width: fit-content;
   height: 450px;
   overflow-y: scroll;
+  &::-webkit-scrollbar {
+    background: #0c953f;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #af854d;
+    border-radius: 5px;
+    border: 0.5px solid #010101;
+    height: 60px;
+  }
   > div {
     &:nth-child(odd) {
       background: #afb2af;
@@ -57,4 +66,17 @@ export const Info = styled.div`
 export const Country = styled(Header)`
   width: 870px;
   background: initial;
+`;
+
+export const Triangle = styled.div`
+  position: absolute;
+  left: 116px;
+  top: 84px;
+  width: 0;
+  height: 0;
+  border-width: 0 8px 12px 8px;
+  border-color: transparent transparent #fff transparent;
+  border-style: solid;
+  cursor: pointer;
+  transform: ${(props) => (props.reverse ? "rotateX(180deg)" : "none")};
 `;
