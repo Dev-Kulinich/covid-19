@@ -13,11 +13,9 @@ import {
 export const CovidTable = () => {
   const [data, setData] = useState([]);
   const [reverse, serReverse] = useState(false);
-  const [findCountry, setFindCountry] = useState(false);
-
-  const toggleReverse = () => serReverse(!reverse);
-
-  const toggleFind = () => setFindCountry(!findCountry);
+  const [searchCountryMenu, setSearchCountryMenu] = useState(false);
+  const [userCountry, setUserCountry] = useState([]);
+  console.log(userCountry);
 
   useEffect(() => {
     fetch("https://covid-19.dataflowkit.com/v1")
@@ -27,11 +25,17 @@ export const CovidTable = () => {
 
   const arr = data
     .slice(1, data.length - 1)
-    .sort((a, b) => (a.Country_text > b.Country_text ? 1 : -1));
+    .sort((a, b) =>
+      reverse
+        ? a.Country_text > b.Country_text
+          ? -1
+          : 1
+        : a.Country_text > b.Country_text
+        ? 1
+        : -1
+    );
 
-  const arrReverse = [...arr].reverse();
-
-  const renderCountryStat = () =>
+  const renderCountryStat = (arr = []) =>
     arr.map((obj) => (
       <Country key={obj.Country_text}>
         <div>{obj.Country_text}</div>
@@ -51,34 +55,16 @@ export const CovidTable = () => {
       </Country>
     ));
 
-  const renderReverseCountryStat = () =>
-    arrReverse.map((obj) => (
-      <Country key={obj.Country_text}>
-        <div>{obj.Country_text}</div>
-        <div>
-          {obj["New Cases_text"] == 0 ? "no info" : obj["New Cases_text"]}
-        </div>
-        <div>
-          {obj["New Deaths_text"] == 0 ? "no info" : obj["New Deaths_text"]}
-        </div>
-        <div>
-          {obj["Total Cases_text"] == 0 ? "no info" : obj["Total Cases_text"]}
-        </div>
-        <div>
-          {obj["Total Deaths_text"] == 0 ? "no info" : obj["Total Deaths_text"]}
-        </div>
-        <div>
-          {obj["Last Update"] == null ? "no info" : obj["Last Update"]}{" "}
-        </div>
-      </Country>
-    ));
-
   return (
     <Table>
-      <Triangle reverse={reverse} onClick={toggleReverse} />
-      <Search onClick={toggleFind} />
-      <SearchBox findCountry={findCountry}>
-        <input placeholder="Enter country"></input>
+      <Triangle reverse={reverse} onClick={() => serReverse(!reverse)} />
+      <Search onClick={() => setSearchCountryMenu(!searchCountryMenu)} />
+      <SearchBox searchCountryMenu={searchCountryMenu}>
+        <input
+          type="text"
+          placeholder="Search..."
+          onInput={(event) => setUserCountry(event.target.value.toLowerCase())}
+        />
         <button>Find</button>
       </SearchBox>
       <Header>
@@ -89,7 +75,7 @@ export const CovidTable = () => {
         <div>Total Deaths</div>
         <div>Last Update</div>
       </Header>
-      <Info>{reverse ? renderReverseCountryStat() : renderCountryStat()}</Info>
+      <Info>{renderCountryStat(arr)}</Info>
     </Table>
   );
 };

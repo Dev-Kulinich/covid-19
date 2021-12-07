@@ -95,7 +95,7 @@ export const Search = styled(ReactComponent)`
 `;
 
 export const SearchBox = styled.div`
-  display: ${(props) => (props.findCountry ? "none" : "flex")};
+  display: ${(props) => (props.searchCountryMenu ? "flex" : "none")};
   position: absolute;
   left: 53px;
   top: 115px;
