@@ -1,5 +1,7 @@
 import styled from "styled-components";
 
+import { ReactComponent } from "../img/search.svg";
+
 export const Table = styled.div`
   width: 890px;
   height: 490px;
@@ -44,9 +46,8 @@ export const Info = styled.div`
     background: #0c953f;
   }
   &::-webkit-scrollbar-thumb {
-    background: #af854d;
+    background: #fff;
     border-radius: 5px;
-    border: 0.5px solid #010101;
     height: 60px;
   }
   > div {
@@ -79,4 +80,56 @@ export const Triangle = styled.div`
   border-style: solid;
   cursor: pointer;
   transform: ${(props) => (props.reverse ? "rotateX(180deg)" : "none")};
+`;
+
+export const Search = styled(ReactComponent)`
+  position: absolute;
+  left: 155px;
+  top: 80px;
+  width: 23px;
+  height: fit-content;
+  cursor: pointer;
+  path {
+    fill: #fff;
+  }
+`;
+
+export const SearchBox = styled.div`
+  display: ${(props) => (props.findCountry ? "none" : "flex")};
+  position: absolute;
+  left: 53px;
+  top: 115px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  width: 230px;
+  height: 50px;
+  background: #fff;
+  &::after {
+    content: "";
+    position: absolute;
+    top: -11px;
+    left: 103px;
+    display: block;
+    border-width: 0 10px 20px 10px;
+    border-color: transparent transparent #fff transparent;
+    border-style: solid;
+  }
+  > input {
+    width: 150px;
+    height: 30px;
+    margin-right: 10px;
+    border: 1px solid green;
+    border-radius: 2px;
+  }
+  > button {
+    width: 50px;
+    height: 30px;
+    border: none;
+    background: green;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 2px;
+    cursor: pointer;
+  }
 `;
