@@ -68,6 +68,14 @@ export const CovidTable = () => {
 
   return (
     <Table>
+      <Header>
+        <div>Country</div>
+        <div>New Cases</div>
+        <div>New Deaths</div>
+        <div>Total Cases</div>
+        <div>Total Deaths</div>
+        <div>Last Update</div>
+      </Header>
       <Triangle reverse={reverse} onClick={() => setReverse(!reverse)} />
       <Search onClick={() => setSearchCountryMenu(!searchCountryMenu)} />
       <SearchBox searchCountryMenu={searchCountryMenu}>
@@ -77,14 +85,6 @@ export const CovidTable = () => {
           onChange={(event) => setUserCountry(event.target.value.toLowerCase())}
         />
       </SearchBox>
-      <Header>
-        <div>Country</div>
-        <div>New Cases</div>
-        <div>New Deaths</div>
-        <div>Total Cases</div>
-        <div>Total Deaths</div>
-        <div>Last Update</div>
-      </Header>
       <Info>{renderCountryStat(arr)}</Info>
     </Table>
   );

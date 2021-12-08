@@ -6,10 +6,13 @@ export const Table = styled.div`
   width: 890px;
   height: 490px;
   background: #d1d2d2;
+  position: relative;
+  left: 0;
+  top: 0;
 `;
 
 export const Header = styled.div`
-  width: 889px;
+  width: 890px;
   height: 40px;
   padding-left: 20px;
   color: #fff;
@@ -39,7 +42,7 @@ export const Header = styled.div`
 export const Info = styled.div`
   display: flex;
   flex-direction: column;
-  width: 889px;
+  width: fit-content;
   height: 450px;
   overflow-y: scroll;
   &::-webkit-scrollbar {
@@ -65,14 +68,14 @@ export const Info = styled.div`
 `;
 
 export const Country = styled(Header)`
-  width: 872px;
+  width: 873px;
   background: initial;
 `;
 
 export const Triangle = styled.div`
   position: absolute;
-  left: 116px;
-  top: 84px;
+  left: 100px;
+  top: 15px;
   width: 0;
   height: 0;
   border-width: 0 8px 12px 8px;
@@ -85,7 +88,7 @@ export const Triangle = styled.div`
 export const Search = styled(ReactComponent)`
   position: absolute;
   left: 155px;
-  top: 80px;
+  top: 10px;
   width: 23px;
   height: fit-content;
   cursor: pointer;
@@ -99,7 +102,7 @@ export const SearchBox = styled.div`
   position: absolute;
   justify-content: center;
   left: 75px;
-  top: 13px;
+  top: -55px;
   align-items: center;
   padding: 10px;
   border-radius: 5px;
