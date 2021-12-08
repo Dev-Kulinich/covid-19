@@ -9,7 +9,7 @@ export const Table = styled.div`
 `;
 
 export const Header = styled.div`
-  width: 888px;
+  width: 889px;
   height: 40px;
   padding-left: 20px;
   color: #fff;
@@ -39,7 +39,7 @@ export const Header = styled.div`
 export const Info = styled.div`
   display: flex;
   flex-direction: column;
-  width: fit-content;
+  width: 889px;
   height: 450px;
   overflow-y: scroll;
   &::-webkit-scrollbar {
@@ -65,7 +65,7 @@ export const Info = styled.div`
 `;
 
 export const Country = styled(Header)`
-  width: 870px;
+  width: 872px;
   background: initial;
 `;
 
@@ -123,14 +123,4 @@ export const SearchBox = styled.div`
     border: 1px solid green;
     border-radius: 2px;
   }
-  /* > button {
-    width: 50px;
-    height: 30px;
-    border: none;
-    background: green;
-    color: #fff;
-    font-weight: bold;
-    border-radius: 2px;
-    cursor: pointer;
-  } */
 `;

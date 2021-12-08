@@ -18,3 +18,8 @@ h2,
 h3 {
   margin: 0;
 }
+
+svg {
+  display: inline-block;
+  vertical-align: middle;
+}
