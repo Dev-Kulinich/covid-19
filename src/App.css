@@ -1,3 +1,8 @@
 h2 {
   color: #227e1d;
 }
+
+.leaflet-container {
+  width: 80vw;
+  height: 700px;
+}
