@@ -9,6 +9,7 @@ export const Table = styled.div`
   position: relative;
   left: 0;
   top: 0;
+  margin-bottom: 20px;
 `;
 
 export const Header = styled.div`
@@ -50,7 +51,6 @@ export const Info = styled.div`
   }
   &::-webkit-scrollbar-thumb {
     background: #fff;
-    border-radius: 5px;
     height: 60px;
   }
   > div {
