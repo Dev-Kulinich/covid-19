@@ -13,21 +13,38 @@ export const MapCountries = () => {
       .then((json) => setData(json));
   }, []);
 
-  const arr = data.slice(1, data.length - 1);
-
   countriesData.features.forEach((obj) => {
-    for (let key in obj) {
-      if (key === "properties") {
-        for (let key1 in obj[key]) {
-          if (key1 !== "admin") {
-            delete obj[key][key1];
-          }
-        }
+    for (let key in obj.properties)
+      if (key !== "admin") {
+        delete obj.properties[key];
       }
-    }
   });
 
+  countriesData.features.forEach((obj) => {
+    data.forEach((obj_) => {
+      if (
+        obj_.Country_text === obj.properties.admin ||
+        obj_.Country_text === transformLongNameCoun(obj.properties.admin)
+      ) {
+        obj.properties.total_case = obj_["Total Cases_text"];
+      }
+    });
+  });
+
+  function transformLongNameCoun(word) {
+    let res = [];
+    word.split(" ").forEach((el) => {
+      el.split("").forEach((letter) => {
+        if (letter === letter.toUpperCase()) {
+          res.push(letter);
+        }
+      });
+    });
+    return res.join("");
+  }
+
   console.log(countriesData.features);
+
   return (
     <MapContainer
       center={[50.358079, 30.598151]}
