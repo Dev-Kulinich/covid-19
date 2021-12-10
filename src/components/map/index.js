@@ -27,7 +27,7 @@ export const MapCountries = () => {
         obj_.Country_text === obj.properties.admin ||
         obj_.Country_text === transformLongNameCoun(obj.properties.admin)
       ) {
-        obj.properties.total_case = obj_["Total Cases_text"];
+        obj.properties.total_case = deleteComma(obj_["Total Cases_text"]);
       }
     });
   });
@@ -41,7 +41,15 @@ export const MapCountries = () => {
     });
     return res.join("");
   }
+
+  function deleteComma(str) {
+    let result = [];
+    str.split("").forEach((el) => (el !== "," ? result.push(el) : null));
+    return +result.join("");
+  }
+
   console.log(countriesData.features);
+
   return (
     <MapContainer
       center={[50.358079, 30.598151]}
