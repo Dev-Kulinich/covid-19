@@ -1,9 +1,14 @@
-import { MapContainer, TileLayer, Polygon } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Polygon,
+  Popup,
+  Tooltip,
+} from "react-leaflet";
 import { useEffect, useState } from "react";
 
 import * as countriesData from "../../data/countries.json";
 import "../../App.css";
-import { array } from "prop-types";
 
 export const MapCountries = () => {
   const [data, setData] = useState([]);
@@ -48,8 +53,6 @@ export const MapCountries = () => {
     return +result.join("");
   }
 
-  console.log(countriesData.features);
-
   return (
     <MapContainer
       center={[50.358079, 30.598151]}
@@ -57,8 +60,8 @@ export const MapCountries = () => {
       scrollWheelZoom={true}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+        url="https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=vn4Q36WSJHbNNiQFkE7F"
       />
       {countriesData.features.map((state) => {
         let coordinates;
@@ -72,19 +75,69 @@ export const MapCountries = () => {
             item[0],
           ]);
         }
+
+        function getColor(data) {
+          return data > 30000000
+            ? "#800026"
+            : data > 5000000
+            ? "#BD0026"
+            : data > 1000000
+            ? "#E31A1C"
+            : data > 500000
+            ? "#FC4E2A"
+            : data > 100000
+            ? "#FD8D3C"
+            : data > 50000
+            ? "#FEB24C"
+            : data > 10000
+            ? "#FED976"
+            : "#FFEDA0";
+        }
+
         return (
           <Polygon
             key={state.properties.admin}
             pathOptions={{
-              fillColor: "#FD8D3C",
+              fillColor: getColor(state.properties.total_case),
               fillOpacity: 0.7,
               weight: 2,
               opacity: 1,
-              dashArray: 4,
+              dashArray: 3,
               color: "white",
             }}
             positions={coordinates}
-          />
+            eventHandlers={{
+              mouseover: (event) => {
+                const layer = event.target;
+                layer.setStyle({
+                  weight: 4,
+                  dashArray: "",
+                  color: "#666",
+                });
+                layer.bringToFront();
+              },
+              mouseout: (event) => {
+                const layer = event.target;
+                layer.setStyle({
+                  weight: 2,
+                  opacity: 1,
+                  dashArray: "3",
+                  color: "white",
+                });
+              },
+            }}
+          >
+            <Tooltip>
+              <h2>{state.properties.admin}</h2>
+              <div style={{ fontSize: 14, fontWeight: "bold" }}>
+                Сonfirmed results:{" "}
+                <span style={{ color: "red" }}>
+                  {" "}
+                  {state.properties.total_case}
+                </span>
+              </div>
+            </Tooltip>
+          </Polygon>
         );
       })}
     </MapContainer>
