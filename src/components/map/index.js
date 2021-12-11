@@ -2,8 +2,8 @@ import {
   MapContainer,
   TileLayer,
   Polygon,
-  Popup,
   Tooltip,
+  Popup,
 } from "react-leaflet";
 import { useEffect, useState } from "react";
 
@@ -12,6 +12,7 @@ import "../../App.css";
 
 export const MapCountries = () => {
   const [data, setData] = useState([]);
+  const [info, setInfo] = useState(null);
 
   useEffect(() => {
     fetch("https://covid-19.dataflowkit.com/v1")
@@ -108,7 +109,7 @@ export const MapCountries = () => {
             positions={coordinates}
             eventHandlers={{
               mouseover: (event) => {
-                const layer = event.target;
+                let layer = event.target;
                 layer.setStyle({
                   weight: 4,
                   dashArray: "",
@@ -117,7 +118,7 @@ export const MapCountries = () => {
                 layer.bringToFront();
               },
               mouseout: (event) => {
-                const layer = event.target;
+                let layer = event.target;
                 layer.setStyle({
                   weight: 2,
                   opacity: 1,
@@ -127,16 +128,15 @@ export const MapCountries = () => {
               },
             }}
           >
-            <Tooltip>
+            <Popup>
               <h2>{state.properties.admin}</h2>
-              <div style={{ fontSize: 14, fontWeight: "bold" }}>
-                Сonfirmed results:{" "}
+              <div style={{ fontSize: 16, fontWeight: "bold" }}>
+                Total cases:{" "}
                 <span style={{ color: "red" }}>
-                  {" "}
                   {state.properties.total_case}
                 </span>
               </div>
-            </Tooltip>
+            </Popup>
           </Polygon>
         );
       })}

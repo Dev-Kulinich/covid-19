@@ -2,7 +2,15 @@ h2 {
   color: #227e1d;
 }
 
-.leaflet-container {
+.map-container {
+  position: relative;
+  top: 0;
+  right: 0;
   width: 80vw;
   height: 700px;
+}
+
+.leaflet-container {
+  width: inherit;
+  height: inherit;
 }
