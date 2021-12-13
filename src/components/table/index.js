@@ -15,6 +15,7 @@ export const CovidTable = React.memo(function CovidTable() {
   const [reverse, setReverse] = useState(false);
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
   const [userCountry, setUserCountry] = useState([]);
+  console.log(data);
 
   useEffect(() => {
     fetch("https://covid-19.dataflowkit.com/v1")
@@ -22,17 +23,37 @@ export const CovidTable = React.memo(function CovidTable() {
       .then((json) => setData(json));
   }, []);
 
-  const arr = data
-    .slice(1, data.length - 1)
-    .sort((a, b) =>
-      reverse
-        ? a.Country_text > b.Country_text
-          ? -1
-          : 1
-        : a.Country_text > b.Country_text
-        ? 1
-        : -1
-    );
+  function deleteComma(str) {
+    let result = [];
+    str.split("").forEach((el) => (el !== "," ? result.push(el) : null));
+    return +result.join("");
+  }
+
+  data.forEach((obj) => {
+    for (let key in obj) {
+      if (
+        /\,/.test(obj[key]) ||
+        /\+/.test(obj[key]) ||
+        (/\d/.test(obj[key]) && obj[key].length <= 2)
+      ) {
+        obj[key] = deleteComma(obj[key]);
+      }
+    }
+  });
+
+  const reverseData = (array = [], string) => {
+    return array
+      .slice(1, array.length - 1)
+      .sort((a, b) =>
+        reverse
+          ? a[string] > b[string]
+            ? -1
+            : 1
+          : a[string] > b[string]
+          ? 1
+          : -1
+      );
+  };
 
   const renderCountryStat = (arr = []) =>
     arr
@@ -85,7 +106,7 @@ export const CovidTable = React.memo(function CovidTable() {
           onChange={(event) => setUserCountry(event.target.value.toLowerCase())}
         />
       </SearchBox>
-      <Info>{renderCountryStat(arr)}</Info>
+      <Info>{renderCountryStat(reverseData(data, "Total Cases_text"))}</Info>
     </Table>
   );
 });
