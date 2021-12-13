@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Header,
@@ -10,7 +10,7 @@ import {
   SearchBox,
 } from "./styled";
 
-export const CovidTable = () => {
+export const CovidTable = React.memo(function CovidTable() {
   const [data, setData] = useState([]);
   const [reverse, setReverse] = useState(false);
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
@@ -88,4 +88,4 @@ export const CovidTable = () => {
       <Info>{renderCountryStat(arr)}</Info>
     </Table>
   );
-};
+});
