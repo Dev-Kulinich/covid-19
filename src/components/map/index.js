@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Polygon } from "react-leaflet";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import * as countriesData from "../../data/countries.json";
 import "../../App.css";
@@ -50,6 +50,77 @@ export const MapCountries = () => {
     return +result.join("");
   }
 
+  const renderPolygon = useMemo(
+    () =>
+      countriesData.features.map((state) => {
+        let coordinates;
+        if (state.geometry.type === "MultiPolygon") {
+          coordinates = state.geometry.coordinates.map((item) =>
+            item.map((el) => el.map((data) => [data[1], data[0]]))
+          );
+        } else {
+          coordinates = state.geometry.coordinates[0].map((item) => [
+            item[1],
+            item[0],
+          ]);
+        }
+
+        function getColor(data) {
+          return data > 30000000
+            ? "#800026"
+            : data > 5000000
+            ? "#BD0026"
+            : data > 1000000
+            ? "#E31A1C"
+            : data > 500000
+            ? "#FC4E2A"
+            : data > 100000
+            ? "#FD8D3C"
+            : data > 50000
+            ? "#FEB24C"
+            : data > 10000
+            ? "#FED976"
+            : "#FFEDA0";
+        }
+
+        return (
+          <Polygon
+            key={state.properties.admin}
+            pathOptions={{
+              fillColor: getColor(state.properties.total_case),
+              fillOpacity: 0.7,
+              weight: 2,
+              opacity: 1,
+              dashArray: 3,
+              color: "white",
+            }}
+            positions={coordinates}
+            eventHandlers={{
+              mouseover: (event) => {
+                let layer = event.target;
+                layer.setStyle({ weight: 4, dashArray: "", color: "#666" });
+                layer.bringToFront();
+                setInfo({
+                  country: state.properties.admin,
+                  total: state.properties.total_case,
+                });
+              },
+              mouseout: (event) => {
+                let layer = event.target;
+                layer.setStyle({
+                  weight: 2,
+                  dashArray: "3",
+                  color: "white",
+                });
+                setInfo(null);
+              },
+            }}
+          />
+        );
+      }),
+    [data]
+  );
+
   return (
     <div className="container">
       <MapContainer
@@ -75,76 +146,7 @@ export const MapCountries = () => {
             </div>
           )}
         </HoverInfo>
-        {countriesData.features.map((state) => {
-          let coordinates;
-          if (state.geometry.type === "MultiPolygon") {
-            coordinates = state.geometry.coordinates.map((item) =>
-              item.map((el) => el.map((data) => [data[1], data[0]]))
-            );
-          } else {
-            coordinates = state.geometry.coordinates[0].map((item) => [
-              item[1],
-              item[0],
-            ]);
-          }
-
-          function getColor(data) {
-            return data > 30000000
-              ? "#800026"
-              : data > 5000000
-              ? "#BD0026"
-              : data > 1000000
-              ? "#E31A1C"
-              : data > 500000
-              ? "#FC4E2A"
-              : data > 100000
-              ? "#FD8D3C"
-              : data > 50000
-              ? "#FEB24C"
-              : data > 10000
-              ? "#FED976"
-              : "#FFEDA0";
-          }
-
-          return (
-            <Polygon
-              key={state.properties.admin}
-              pathOptions={{
-                fillColor: getColor(state.properties.total_case),
-                fillOpacity: 0.7,
-                weight: 2,
-                opacity: 1,
-                dashArray: 3,
-                color: "white",
-              }}
-              positions={coordinates}
-              eventHandlers={{
-                mouseover: (event) => {
-                  let layer = event.target;
-                  layer.setStyle({
-                    weight: 4,
-                    dashArray: "",
-                    color: "#666",
-                  });
-                  layer.bringToFront();
-                  // setInfo({
-                  //   country: state.properties.admin,
-                  //   total: state.properties.total_case,
-                  // });
-                },
-                mouseout: (event) => {
-                  let layer = event.target;
-                  layer.setStyle({
-                    weight: 2,
-                    dashArray: "3",
-                    color: "white",
-                  });
-                  setInfo(null);
-                },
-              }}
-            ></Polygon>
-          );
-        })}
+        {renderPolygon}
       </MapContainer>
     </div>
   );
