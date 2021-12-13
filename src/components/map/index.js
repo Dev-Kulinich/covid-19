@@ -1,13 +1,14 @@
-import { MapContainer, TileLayer, Polygon, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Polygon } from "react-leaflet";
 import { useEffect, useState } from "react";
 
 import * as countriesData from "../../data/countries.json";
 import "../../App.css";
 import { Legend } from "../legend";
-import { Hover } from "./styled";
+import { HoverInfo } from "./styled";
 
 export const MapCountries = () => {
   const [data, setData] = useState([]);
+  const [info, setInfo] = useState(null);
 
   useEffect(() => {
     fetch("https://covid-19.dataflowkit.com/v1")
@@ -61,6 +62,19 @@ export const MapCountries = () => {
           url="https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=vn4Q36WSJHbNNiQFkE7F"
         />
         <Legend />
+        <HoverInfo>
+          <h3>Statistics Covid-19</h3>
+          {info === null ? (
+            <p>Move the mouse over the country</p>
+          ) : (
+            <div>
+              <div>{info.country}</div>
+              <div>
+                Total cases: <b>{info.total}</b> peoples
+              </div>
+            </div>
+          )}
+        </HoverInfo>
         {countriesData.features.map((state) => {
           let coordinates;
           if (state.geometry.type === "MultiPolygon") {
@@ -113,6 +127,10 @@ export const MapCountries = () => {
                     color: "#666",
                   });
                   layer.bringToFront();
+                  setInfo({
+                    country: state.properties.admin,
+                    total: state.properties.total_case,
+                  });
                 },
                 mouseout: (event) => {
                   let layer = event.target;
@@ -122,20 +140,10 @@ export const MapCountries = () => {
                     dashArray: "3",
                     color: "white",
                   });
+                  setInfo(null);
                 },
               }}
-            >
-              <Hover>
-                <h2>{state.properties.admin}</h2>
-                <div style={{ fontSize: 16, fontWeight: "bold" }}>
-                  Total cases:{" "}
-                  <span style={{ color: "red" }}>
-                    {" "}
-                    {state.properties.total_case}
-                  </span>
-                </div>
-              </Hover>
-            </Polygon>
+            ></Polygon>
           );
         })}
       </MapContainer>
