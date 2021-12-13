@@ -127,16 +127,15 @@ export const MapCountries = () => {
                     color: "#666",
                   });
                   layer.bringToFront();
-                  setInfo({
-                    country: state.properties.admin,
-                    total: state.properties.total_case,
-                  });
+                  // setInfo({
+                  //   country: state.properties.admin,
+                  //   total: state.properties.total_case,
+                  // });
                 },
                 mouseout: (event) => {
                   let layer = event.target;
                   layer.setStyle({
                     weight: 2,
-                    opacity: 1,
                     dashArray: "3",
                     color: "white",
                   });
