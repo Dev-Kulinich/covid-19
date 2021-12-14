@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import moment from "moment";
 
 import {
   Header,
@@ -8,6 +9,8 @@ import {
   Triangle,
   Search,
   SearchBox,
+  ColumTableItem,
+  Guide,
 } from "./styled";
 
 export const CovidTable = React.memo(function CovidTable() {
@@ -15,7 +18,7 @@ export const CovidTable = React.memo(function CovidTable() {
   const [reverse, setReverse] = useState(false);
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
   const [userCountry, setUserCountry] = useState([]);
-  console.log(data);
+  const [activeValue, setActiveValue] = useState("Country_text");
 
   useEffect(() => {
     fetch("https://covid-19.dataflowkit.com/v1")
@@ -34,16 +37,16 @@ export const CovidTable = React.memo(function CovidTable() {
       if (
         /\,/.test(obj[key]) ||
         /\+/.test(obj[key]) ||
-        (/\d/.test(obj[key]) && obj[key].length <= 2)
+        (/\d/.test(obj[key]) && obj[key].length <= 3)
       ) {
         obj[key] = deleteComma(obj[key]);
       }
     }
   });
 
-  const reverseData = (array = [], string) => {
-    return array
-      .slice(1, array.length - 1)
+  const reverseData = (string) => {
+    return data
+      .slice(1, data.length - 1)
       .sort((a, b) =>
         reverse
           ? a[string] > b[string]
@@ -65,8 +68,8 @@ export const CovidTable = React.memo(function CovidTable() {
         }
       })
       .map((obj) => (
-        <Country key={obj.Country_text}>
-          <div>{obj.Country_text}</div>
+        <Country key={obj["Country_text"]}>
+          <div>{obj["Country_text"]}</div>
           <div>
             {obj["New Cases_text"] == 0 ? "no info" : obj["New Cases_text"]}
           </div>
@@ -82,19 +85,57 @@ export const CovidTable = React.memo(function CovidTable() {
               : obj["Total Deaths_text"]}
           </div>
           <div>
-            {obj["Last Update"] == null ? "no info" : obj["Last Update"]}
+            {obj["Last Update"] == null
+              ? "no info"
+              : moment(obj["Last Update"]).format("DD MMM YYYY - HH:mm")}
           </div>
         </Country>
       ));
 
   return (
     <Table>
+      <Guide>
+        <p>
+          The <b>active</b> column is <b>yellow</b>. You can change it. Just{" "}
+          <b>click</b> on the one that interests you
+        </p>
+      </Guide>
       <Header>
-        <div>Country</div>
-        <div>New Cases</div>
-        <div>New Deaths</div>
-        <div>Total Cases</div>
-        <div>Total Deaths</div>
+        <ColumTableItem
+          value={"Country_text"}
+          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          is_active={activeValue}
+        >
+          Country
+        </ColumTableItem>
+        <ColumTableItem
+          value={"New Cases_text"}
+          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          is_active={activeValue}
+        >
+          New Cases
+        </ColumTableItem>
+        <ColumTableItem
+          value={"New Deaths_text"}
+          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          is_active={activeValue}
+        >
+          New Deaths
+        </ColumTableItem>
+        <ColumTableItem
+          value={"Total Cases_text"}
+          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          is_active={activeValue}
+        >
+          Total Cases
+        </ColumTableItem>
+        <ColumTableItem
+          value={"Total Deaths_text"}
+          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          is_active={activeValue}
+        >
+          Total Deaths
+        </ColumTableItem>
         <div>Last Update</div>
       </Header>
       <Triangle reverse={reverse} onClick={() => setReverse(!reverse)} />
@@ -106,7 +147,7 @@ export const CovidTable = React.memo(function CovidTable() {
           onChange={(event) => setUserCountry(event.target.value.toLowerCase())}
         />
       </SearchBox>
-      <Info>{renderCountryStat(reverseData(data, "Total Cases_text"))}</Info>
+      <Info>{renderCountryStat(reverseData(activeValue))}</Info>
     </Table>
   );
 });

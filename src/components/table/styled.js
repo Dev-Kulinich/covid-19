@@ -9,7 +9,17 @@ export const Table = styled.div`
   position: relative;
   left: 0;
   top: 0;
-  margin-bottom: 20px;
+  margin: 10px 0 20px;
+`;
+
+export const Guide = styled.div`
+  width: fit-content;
+  height: 40px;
+  padding: 15px;
+  position: absolute;
+  top: -47px;
+  left: -10px;
+  font-size: 14px;
 `;
 
 export const Header = styled.div`
@@ -28,6 +38,7 @@ export const Header = styled.div`
     rgba(22, 213, 60, 1) 100%
   );
   > div {
+    cursor: pointer;
     display: flex;
     justify-content: flex-start;
     width: 120px;
@@ -36,8 +47,13 @@ export const Header = styled.div`
     }
     &:last-child {
       width: 150px;
+      cursor: default;
     }
   }
+`;
+
+export const ColumTableItem = styled.div`
+  color: ${(props) => (props.is_active === props.value ? "yellow" : "white")};
 `;
 
 export const Info = styled.div`
@@ -74,7 +90,7 @@ export const Country = styled(Header)`
 
 export const Triangle = styled.div`
   position: absolute;
-  left: 100px;
+  left: 170px;
   top: 15px;
   width: 0;
   height: 0;
@@ -87,7 +103,7 @@ export const Triangle = styled.div`
 
 export const Search = styled(ReactComponent)`
   position: absolute;
-  left: 155px;
+  left: 125px;
   top: 10px;
   width: 23px;
   height: fit-content;
@@ -101,7 +117,7 @@ export const SearchBox = styled.div`
   display: ${(props) => (props.searchCountryMenu ? "flex" : "none")};
   position: absolute;
   justify-content: center;
-  left: 75px;
+  left: 45px;
   top: -55px;
   align-items: center;
   padding: 10px;
