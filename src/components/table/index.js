@@ -15,7 +15,7 @@ import {
 
 export const CovidTable = React.memo(function CovidTable() {
   const [data, setData] = useState([]);
-  const [reverse, setReverse] = useState(false);
+  const [reverse, setReverse] = useState(true);
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
   const [userCountry, setUserCountry] = useState([]);
   const [activeValue, setActiveValue] = useState("Country_text");

@@ -94,7 +94,7 @@ export const Triangle = styled.div`
   top: 15px;
   width: 0;
   height: 0;
-  border-width: 0 8px 12px 8px;
+  border-width: 0 10px 16px 10px;
   border-color: transparent transparent #fff transparent;
   border-style: solid;
   cursor: pointer;
