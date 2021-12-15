@@ -18,7 +18,7 @@ export const CovidTable = React.memo(function CovidTable() {
   const [reverse, setReverse] = useState(true);
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
   const [userCountry, setUserCountry] = useState([]);
-  const [activeValue, setActiveValue] = useState("Country_text");
+  const [activeValue, setActiveValue] = useState("Total Cases_text");
 
   useEffect(() => {
     fetch("https://covid-19.dataflowkit.com/v1")
