@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Polygon } from "react-leaflet";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import * as countriesData from "../../data/countries.json";
 import "../../App.css";
@@ -16,25 +16,16 @@ export const MapCountries = () => {
       .then((json) => setData(json));
   }, []);
 
-  countriesData.features.forEach((obj) => {
-    for (let key in obj.properties)
-      if (key !== "admin") {
-        delete obj.properties[key];
-      }
-  });
-
-  countriesData.features.forEach((obj) => {
-    data.forEach((obj_) => {
-      if (
-        obj_.Country_text === obj.properties.admin ||
-        obj_.Country_text === transformLongNameCoun(obj.properties.admin)
-      ) {
-        obj.properties.total_case = deleteComma(obj_["Total Cases_text"]);
-      }
+  useMemo(() => {
+    countriesData.features.forEach((obj) => {
+      for (let key in obj.properties)
+        if (key !== "admin") {
+          delete obj.properties[key];
+        }
     });
-  });
+  }, [countriesData.features]);
 
-  function transformLongNameCoun(word) {
+  const transformLongNameCoun = useCallback((word) => {
     let res = [];
     word.split(" ").forEach((el) => {
       if (el.slice(0, 1) === el.slice(0, 1).toUpperCase()) {
@@ -42,13 +33,26 @@ export const MapCountries = () => {
       }
     });
     return res.join("");
-  }
+  }, []);
 
-  function deleteComma(str) {
+  const deleteComma = useCallback((str) => {
     let result = [];
     str.split("").forEach((el) => (el !== "," ? result.push(el) : null));
     return +result.join("");
-  }
+  }, []);
+
+  useMemo(() => {
+    countriesData.features.forEach((obj) => {
+      data.forEach((obj_) => {
+        if (
+          obj_.Country_text === obj.properties.admin ||
+          obj_.Country_text === transformLongNameCoun(obj.properties.admin)
+        ) {
+          obj.properties.total_case = deleteComma(obj_["Total Cases_text"]);
+        }
+      });
+    });
+  }, [data, countriesData.features]);
 
   const renderPolygon = useMemo(
     () =>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import moment from "moment";
 
 import {
@@ -26,71 +26,81 @@ export const CovidTable = React.memo(function CovidTable() {
       .then((json) => setData(json));
   }, []);
 
-  function deleteComma(str) {
+  const deleteComma = useCallback((str) => {
     let result = [];
     str.split("").forEach((el) => (el !== "," ? result.push(el) : null));
     return +result.join("");
-  }
+  }, []);
 
-  data.forEach((obj) => {
-    for (let key in obj) {
-      if (
-        /\,/.test(obj[key]) ||
-        /\+/.test(obj[key]) ||
-        (/\d/.test(obj[key]) && obj[key].length <= 3)
-      ) {
-        obj[key] = deleteComma(obj[key]);
-      }
-    }
-  });
-
-  const reverseData = (string) => {
-    return data
-      .slice(1, data.length - 1)
-      .sort((a, b) =>
-        reverse
-          ? a[string] > b[string]
-            ? -1
-            : 1
-          : a[string] > b[string]
-          ? 1
-          : -1
-      );
-  };
-
-  const renderCountryStat = (arr = []) =>
-    arr
-      .filter((obj) => {
-        if (userCountry == "") {
-          return obj;
-        } else if (obj.Country_text.toLowerCase().includes(userCountry)) {
-          return obj;
+  useMemo(() => {
+    data.forEach((obj) => {
+      for (let key in obj) {
+        if (
+          /\,/.test(obj[key]) ||
+          /\+/.test(obj[key]) ||
+          (/\d/.test(obj[key]) && obj[key].length <= 3)
+        ) {
+          obj[key] = deleteComma(obj[key]);
         }
-      })
-      .map((obj) => (
-        <Country key={obj["Country_text"]}>
-          <div>{obj["Country_text"]}</div>
-          <div>
-            {obj["New Cases_text"] == 0 ? "no info" : obj["New Cases_text"]}
-          </div>
-          <div>
-            {obj["New Deaths_text"] == 0 ? "no info" : obj["New Deaths_text"]}
-          </div>
-          <div>
-            {obj["Total Cases_text"] == 0 ? "no info" : obj["Total Cases_text"]}
-          </div>
-          <div>
-            {obj["Total Deaths_text"] == 0
-              ? "no info"
-              : obj["Total Deaths_text"]}
-          </div>
-          <div>
-            {obj["Last Update"] == null
-              ? "no info"
-              : moment(obj["Last Update"]).format("DD MMM YYYY - HH:mm")}
-          </div>
-        </Country>
-      ));
+      }
+    });
+  }, [data]);
+
+  const reverseData = useCallback(
+    (string) => {
+      return data
+        .slice(1, data.length - 1)
+        .sort((a, b) =>
+          reverse
+            ? a[string] > b[string]
+              ? -1
+              : 1
+            : a[string] > b[string]
+            ? 1
+            : -1
+        );
+    },
+    [data, reverse]
+  );
+
+  const renderCountryStat = useCallback(
+    (arr = []) =>
+      arr
+        .filter((obj) => {
+          if (userCountry == "") {
+            return obj;
+          } else if (obj.Country_text.toLowerCase().includes(userCountry)) {
+            return obj;
+          }
+        })
+        .map((obj) => (
+          <Country key={obj["Country_text"]}>
+            <div>{obj["Country_text"]}</div>
+            <div>
+              {obj["New Cases_text"] == 0 ? "no info" : obj["New Cases_text"]}
+            </div>
+            <div>
+              {obj["New Deaths_text"] == 0 ? "no info" : obj["New Deaths_text"]}
+            </div>
+            <div>
+              {obj["Total Cases_text"] == 0
+                ? "no info"
+                : obj["Total Cases_text"]}
+            </div>
+            <div>
+              {obj["Total Deaths_text"] == 0
+                ? "no info"
+                : obj["Total Deaths_text"]}
+            </div>
+            <div>
+              {obj["Last Update"] == null
+                ? "no info"
+                : moment(obj["Last Update"]).format("DD MMM YYYY - HH:mm")}
+            </div>
+          </Country>
+        )),
+    [userCountry]
+  );
 
   return (
     <Table>
