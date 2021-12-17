@@ -1,20 +1,22 @@
 import { MapContainer, TileLayer, Polygon } from "react-leaflet";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useContext } from "react";
 
 import * as countriesData from "../../data/countries.json";
 import "../../App.css";
 import { Legend } from "../legend";
 import { HoverInfo } from "./styled";
+import { UserSelectedApi } from "../../App";
 
 export const MapCountries = () => {
   const [data, setData] = useState([]);
   const [info, setInfo] = useState(null);
+  const api = useContext(UserSelectedApi);
 
   useEffect(() => {
-    fetch("https://covid-19.dataflowkit.com/v1")
+    fetch(`${api}`)
       .then((res) => res.json())
       .then((json) => setData(json));
-  }, []);
+  }, [api]);
 
   useMemo(() => {
     countriesData.features.forEach((obj) => {

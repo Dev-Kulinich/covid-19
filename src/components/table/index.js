@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useContext,
+} from "react";
 import moment from "moment";
 
 import {
@@ -12,6 +18,7 @@ import {
   ColumTableItem,
   Guide,
 } from "./styled";
+import { UserSelectedApi } from "../../App";
 
 export const CovidTable = React.memo(function CovidTable() {
   const [data, setData] = useState([]);
@@ -19,12 +26,14 @@ export const CovidTable = React.memo(function CovidTable() {
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
   const [userCountry, setUserCountry] = useState([]);
   const [activeValue, setActiveValue] = useState("Total Cases_text");
+  const api = useContext(UserSelectedApi);
 
   useEffect(() => {
-    fetch("https://covid-19.dataflowkit.com/v1")
+    fetch(`${api}`)
       .then((res) => res.json())
       .then((json) => setData(json));
-  }, []);
+  }, [api]);
+  console.log(data);
 
   const deleteComma = useCallback((str) => {
     let result = [];
@@ -106,7 +115,8 @@ export const CovidTable = React.memo(function CovidTable() {
     <Table>
       <Guide>
         <p>
-          The <b>active</b> column is <b>yellow</b>. You can change it. Just{" "}
+          The <b>active</b> source and column is{" "}
+          <b style={{ color: "#d9d91f" }}>yellow</b>. You can change it. Just{" "}
           <b>click</b> on the one that interests you
         </p>
       </Guide>

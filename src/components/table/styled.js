@@ -9,7 +9,7 @@ export const Table = styled.div`
   position: relative;
   left: 0;
   top: 0;
-  margin: 10px 0 20px;
+  margin: 0 0 20px;
 `;
 
 export const Guide = styled.div`
