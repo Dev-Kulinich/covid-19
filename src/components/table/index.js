@@ -156,7 +156,7 @@ export const CovidTable = React.memo(function CovidTable() {
 
   const onClickSendValue = useCallback((event) => {
     return setActiveValue(event.target.getAttribute("value"));
-  });
+  }, []);
 
   return (
     <Table>
