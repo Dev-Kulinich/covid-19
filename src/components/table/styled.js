@@ -46,7 +46,7 @@ export const Header = styled.div`
       width: 210px;
     }
     &:last-child {
-      width: 150px;
+      width: 160px;
       cursor: default;
     }
   }

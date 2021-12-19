@@ -19,6 +19,7 @@ import {
   Guide,
 } from "./styled";
 import { UserSelectedApi } from "../../App";
+import { string } from "prop-types";
 
 export const CovidTable = React.memo(function CovidTable() {
   const [data, setData] = useState([]);
@@ -26,14 +27,15 @@ export const CovidTable = React.memo(function CovidTable() {
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
   const [userCountry, setUserCountry] = useState([]);
   const [activeValue, setActiveValue] = useState("Total Cases_text");
+
   const api = useContext(UserSelectedApi);
+  const newDataArray = [];
 
   useEffect(() => {
     fetch(`${api}`)
       .then((res) => res.json())
       .then((json) => setData(json));
   }, [api]);
-  console.log(data);
 
   const deleteComma = useCallback((str) => {
     let result = [];
@@ -42,32 +44,76 @@ export const CovidTable = React.memo(function CovidTable() {
   }, []);
 
   useMemo(() => {
-    data.forEach((obj) => {
-      for (let key in obj) {
-        if (
-          /\,/.test(obj[key]) ||
-          /\+/.test(obj[key]) ||
-          (/\d/.test(obj[key]) && obj[key].length <= 3)
-        ) {
-          obj[key] = deleteComma(obj[key]);
+    if (`${api}` === "https://covid-19.dataflowkit.com/v1") {
+      data.forEach((obj) => {
+        for (let key in obj) {
+          if (
+            /\,/.test(obj[key]) ||
+            /\+/.test(obj[key]) ||
+            (/\d/.test(obj[key]) && obj[key].length <= 3)
+          ) {
+            obj[key] = deleteComma(obj[key]);
+          }
         }
-      }
-    });
+      });
+    } else {
+      data.forEach((obj) => {
+        for (let key in obj) {
+          if (key === "country" && obj[key] === "US") {
+            obj["Country_text"] = "USA";
+            delete obj[key];
+          } else if (key === "country") {
+            obj["Country_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "confirmed_daily") {
+            obj["New Cases_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "deaths_daily") {
+            obj["New Deaths_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "confirmed") {
+            obj["Total Cases_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "deaths") {
+            obj["Total Deaths_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "date") {
+            obj["Last Update"] = obj[key].slice(0, 10) + " 00:00";
+            delete obj[key];
+          }
+        }
+      });
+    }
   }, [data]);
+
+  useMemo(() => {
+    if (`${api}` !== "https://covid-19.dataflowkit.com/v1") {
+      data.forEach((obj) => {
+        if (obj["Last Update"] === "2020-04-27 00:00") {
+          newDataArray.push(obj);
+        }
+      });
+    }
+  });
+
+  const makeReversCountry = useCallback(
+    (a, b, rev, str) => {
+      return rev ? (a[str] > b[str] ? -1 : 1) : a[str] > b[str] ? 1 : -1;
+    },
+    [reverse, string]
+  );
 
   const reverseData = useCallback(
     (string) => {
-      return data
-        .slice(1, data.length - 1)
-        .sort((a, b) =>
-          reverse
-            ? a[string] > b[string]
-              ? -1
-              : 1
-            : a[string] > b[string]
-            ? 1
-            : -1
+      if (`${api}` === "https://covid-19.dataflowkit.com/v1") {
+        return data
+          .slice(1, data.length - 1)
+          .sort((a, b) => makeReversCountry(a, b, reverse, string));
+      } else {
+        return newDataArray.sort((a, b) =>
+          makeReversCountry(a, b, reverse, string)
         );
+      }
     },
     [data, reverse]
   );
@@ -78,12 +124,12 @@ export const CovidTable = React.memo(function CovidTable() {
         .filter((obj) => {
           if (userCountry == "") {
             return obj;
-          } else if (obj.Country_text.toLowerCase().includes(userCountry)) {
+          } else if (obj["Country_text"].toLowerCase().includes(userCountry)) {
             return obj;
           }
         })
         .map((obj) => (
-          <Country key={obj["Country_text"]}>
+          <Country key={obj["_id"] || obj["Country_text"]}>
             <div>{obj["Country_text"]}</div>
             <div>
               {obj["New Cases_text"] == 0 ? "no info" : obj["New Cases_text"]}
@@ -111,6 +157,10 @@ export const CovidTable = React.memo(function CovidTable() {
     [userCountry]
   );
 
+  const onClickSendValue = useCallback((event) => {
+    return setActiveValue(event.target.getAttribute("value"));
+  });
+
   return (
     <Table>
       <Guide>
@@ -123,35 +173,35 @@ export const CovidTable = React.memo(function CovidTable() {
       <Header>
         <ColumTableItem
           value={"Country_text"}
-          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          onClick={(e) => onClickSendValue(e)}
           is_active={activeValue}
         >
           Country
         </ColumTableItem>
         <ColumTableItem
           value={"New Cases_text"}
-          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          onClick={(e) => onClickSendValue(e)}
           is_active={activeValue}
         >
           New Cases
         </ColumTableItem>
         <ColumTableItem
           value={"New Deaths_text"}
-          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          onClick={(e) => onClickSendValue(e)}
           is_active={activeValue}
         >
           New Deaths
         </ColumTableItem>
         <ColumTableItem
           value={"Total Cases_text"}
-          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          onClick={(e) => onClickSendValue(e)}
           is_active={activeValue}
         >
           Total Cases
         </ColumTableItem>
         <ColumTableItem
           value={"Total Deaths_text"}
-          onClick={(e) => setActiveValue(e.target.getAttribute("value"))}
+          onClick={(e) => onClickSendValue(e)}
           is_active={activeValue}
         >
           Total Deaths

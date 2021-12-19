@@ -1,5 +1,6 @@
-import "./App.css";
 import React, { useState } from "react";
+
+import "./App.css";
 import { CovidTable } from "./components/table/index";
 import { Wrapper, ModalWindow, Button } from "./components/wrapper/index";
 import { MapCountries } from "./components/map/index";
