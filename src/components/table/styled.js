@@ -44,6 +44,8 @@ export const Header = styled.div`
     width: 120px;
     &:first-child {
       width: 210px;
+      height: fit-content;
+      text-align: left;
     }
     &:last-child {
       width: 160px;

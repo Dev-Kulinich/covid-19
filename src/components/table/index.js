@@ -19,7 +19,6 @@ import {
   Guide,
 } from "./styled";
 import { UserSelectedApi } from "../../App";
-import { string } from "prop-types";
 
 export const CovidTable = React.memo(function CovidTable() {
   const [data, setData] = useState([]);
@@ -59,7 +58,10 @@ export const CovidTable = React.memo(function CovidTable() {
     } else {
       data.forEach((obj) => {
         for (let key in obj) {
-          if (key === "country" && obj[key] === "US") {
+          if (key === "country" && obj[key] === "United Kingdom") {
+            obj["Country_text"] = "UK";
+            delete obj[key];
+          } else if (key === "country" && obj[key] === "US") {
             obj["Country_text"] = "USA";
             delete obj[key];
           } else if (key === "country") {
@@ -86,22 +88,17 @@ export const CovidTable = React.memo(function CovidTable() {
     }
   }, [data]);
 
-  useMemo(() => {
-    if (`${api}` !== "https://covid-19.dataflowkit.com/v1") {
-      data.forEach((obj) => {
-        if (obj["Last Update"] === "2020-04-27 00:00") {
-          newDataArray.push(obj);
-        }
-      });
-    }
-  });
+  if (`${api}` !== "https://covid-19.dataflowkit.com/v1") {
+    data.forEach((obj) => {
+      if (obj["Last Update"] === "2020-04-27 00:00") {
+        newDataArray.push(obj);
+      }
+    });
+  }
 
-  const makeReversCountry = useCallback(
-    (a, b, rev, str) => {
-      return rev ? (a[str] > b[str] ? -1 : 1) : a[str] > b[str] ? 1 : -1;
-    },
-    [reverse, string]
-  );
+  const makeReversCountry = useCallback((a, b, rev, str) => {
+    return rev ? (a[str] > b[str] ? -1 : 1) : a[str] > b[str] ? 1 : -1;
+  }, []);
 
   const reverseData = useCallback(
     (string) => {
