@@ -10,6 +10,7 @@ import { UserSelectedApi } from "../../App";
 export const MapCountries = () => {
   const [data, setData] = useState([]);
   const [info, setInfo] = useState(null);
+
   const api = useContext(UserSelectedApi);
 
   useEffect(() => {
@@ -43,18 +44,42 @@ export const MapCountries = () => {
     return +result.join("");
   }, []);
 
-  useMemo(() => {
-    countriesData.features.forEach((obj) => {
-      data.forEach((obj_) => {
-        if (
-          obj_.Country_text === obj.properties.admin ||
-          obj_.Country_text === transformLongNameCoun(obj.properties.admin)
-        ) {
-          obj.properties.total_case = deleteComma(obj_["Total Cases_text"]);
+  if (`${api}` !== "https://covid-19.dataflowkit.com/v1") {
+    data.forEach((obj) => {
+      for (let key in obj) {
+        if (key === "country" && obj[key] === "US") {
+          obj[key] = "USA";
         }
-      });
+      }
     });
-  }, [data, countriesData.features]);
+  }
+
+  useMemo(() => {
+    if (`${api}` === "https://covid-19.dataflowkit.com/v1") {
+      countriesData.features.forEach((obj) => {
+        data.forEach((obj_) => {
+          if (
+            obj_.Country_text === obj.properties.admin ||
+            obj_.Country_text === transformLongNameCoun(obj.properties.admin)
+          ) {
+            obj.properties.total_case = deleteComma(obj_["Total Cases_text"]);
+          }
+        });
+      });
+    } else {
+      countriesData.features.forEach((obj) => {
+        obj.properties.total_case = 0;
+        data.forEach((obj_) => {
+          if (
+            obj_.country === obj.properties.admin ||
+            obj_.country === transformLongNameCoun(obj.properties.admin)
+          ) {
+            obj.properties.total_case = obj_.confirmed;
+          }
+        });
+      });
+    }
+  }, [data]);
 
   const renderPolygon = useMemo(
     () =>
@@ -72,21 +97,39 @@ export const MapCountries = () => {
         }
 
         function getColor(data) {
-          return data > 30000000
-            ? "#800026"
-            : data > 5000000
-            ? "#BD0026"
-            : data > 1000000
-            ? "#E31A1C"
-            : data > 500000
-            ? "#FC4E2A"
-            : data > 100000
-            ? "#FD8D3C"
-            : data > 50000
-            ? "#FEB24C"
-            : data > 10000
-            ? "#FED976"
-            : "#FFEDA0";
+          if (`${api}` === "https://covid-19.dataflowkit.com/v1") {
+            return data > 30000000
+              ? "#800026"
+              : data > 5000000
+              ? "#BD0026"
+              : data > 1000000
+              ? "#E31A1C"
+              : data > 500000
+              ? "#FC4E2A"
+              : data > 100000
+              ? "#FD8D3C"
+              : data > 50000
+              ? "#FEB24C"
+              : data > 10000
+              ? "#FED976"
+              : "#FFEDA0";
+          } else {
+            return data > 500000
+              ? "#800026"
+              : data > 200000
+              ? "#BD0026"
+              : data > 100000
+              ? "#E31A1C"
+              : data > 50000
+              ? "#FC4E2A"
+              : data > 10000
+              ? "#FD8D3C"
+              : data > 2000
+              ? "#FEB24C"
+              : data > 500
+              ? "#FED976"
+              : "#FFEDA0";
+          }
         }
 
         return (
@@ -147,7 +190,16 @@ export const MapCountries = () => {
             <div>
               <div>{info.country}</div>
               <div>
-                Total cases: <b>{info.total}</b> peoples
+                Total cases:{" "}
+                {info.total === 0 || info.total === undefined ? (
+                  <span>
+                    <b>no info</b>
+                  </span>
+                ) : (
+                  <span>
+                    <b>{info.total}</b> peoples
+                  </span>
+                )}
               </div>
             </div>
           )}
