@@ -20,7 +20,7 @@ import {
 } from "./styled";
 import { UserSelectedApi } from "../../App";
 
-export const CovidTable = React.memo(function CovidTable() {
+export const CovidTable = () => {
   const [data, setData] = useState([]);
   const [reverse, setReverse] = useState(true);
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
@@ -217,4 +217,4 @@ export const CovidTable = React.memo(function CovidTable() {
       <Info>{renderCountryStat(reverseData(activeValue))}</Info>
     </Table>
   );
-});
+};

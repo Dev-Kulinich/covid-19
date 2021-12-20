@@ -43,7 +43,8 @@ export const Header = styled.div`
     justify-content: flex-start;
     width: 120px;
     &:first-child {
-      width: 210px;
+      width: 70px;
+      margin-right: 140px;
       height: fit-content;
       text-align: left;
     }
@@ -88,6 +89,12 @@ export const Info = styled.div`
 export const Country = styled(Header)`
   width: 873px;
   background: initial;
+  > div {
+    &:first-child {
+      width: 210px;
+      margin-right: 0;
+    }
+  }
 `;
 
 export const Triangle = styled.div`
