@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useContext,
-} from "react";
+import React, { useState, useCallback, useMemo, useContext } from "react";
 import moment from "moment";
 
 import {
@@ -21,20 +15,13 @@ import {
 import { UserSelectedApi } from "../../App";
 
 export const CovidTable = () => {
-  const [data, setData] = useState([]);
   const [reverse, setReverse] = useState(true);
   const [searchCountryMenu, setSearchCountryMenu] = useState(false);
   const [userCountry, setUserCountry] = useState([]);
   const [activeValue, setActiveValue] = useState("Total Cases_text");
 
-  const api = useContext(UserSelectedApi);
+  const data = useContext(UserSelectedApi);
   const newDataArray = [];
-
-  useEffect(() => {
-    fetch(`${api}`)
-      .then((res) => res.json())
-      .then((json) => setData(json));
-  }, [api]);
 
   const deleteComma = useCallback((str) => {
     let result = [];
@@ -43,8 +30,8 @@ export const CovidTable = () => {
   }, []);
 
   useMemo(() => {
-    if (`${api}` === "https://covid-19.dataflowkit.com/v1") {
-      data.forEach((obj) => {
+    if (data.firstSource) {
+      data.arr.forEach((obj) => {
         for (let key in obj) {
           if (
             /\,/.test(obj[key]) ||
@@ -56,7 +43,7 @@ export const CovidTable = () => {
         }
       });
     } else {
-      data.forEach((obj) => {
+      data.arr.forEach((obj) => {
         for (let key in obj) {
           if (key === "country" && obj[key] === "United Kingdom") {
             obj["Country_text"] = "UK";
@@ -88,8 +75,8 @@ export const CovidTable = () => {
     }
   }, [data]);
 
-  if (`${api}` !== "https://covid-19.dataflowkit.com/v1") {
-    data.forEach((obj) => {
+  if (!data.firstSource) {
+    data.arr.forEach((obj) => {
       if (obj["Last Update"] === "2020-04-27 00:00") {
         newDataArray.push(obj);
       }
@@ -102,9 +89,9 @@ export const CovidTable = () => {
 
   const reverseData = useCallback(
     (string) => {
-      if (`${api}` === "https://covid-19.dataflowkit.com/v1") {
-        return data
-          .slice(1, data.length - 1)
+      if (data.firstSource) {
+        return data.arr
+          .slice(1, data.arr.length - 1)
           .sort((a, b) => makeReversCountry(a, b, reverse, string));
       } else {
         return newDataArray.sort((a, b) =>
@@ -116,8 +103,8 @@ export const CovidTable = () => {
   );
 
   const renderCountryStat = useCallback(
-    (arr = []) =>
-      arr
+    (array = []) =>
+      array
         .filter((obj) => {
           if (userCountry == "") {
             return obj;

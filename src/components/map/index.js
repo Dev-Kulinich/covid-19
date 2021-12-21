@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Polygon } from "react-leaflet";
-import { useCallback, useEffect, useMemo, useState, useContext } from "react";
+import { useCallback, useMemo, useState, useContext, useEffect } from "react";
 
 import * as countriesData from "../../data/countries.json";
 import "../../App.css";
@@ -8,16 +8,9 @@ import { HoverInfo } from "./styled";
 import { UserSelectedApi } from "../../App";
 
 export const MapCountries = () => {
-  const [data, setData] = useState([]);
   const [info, setInfo] = useState(null);
 
-  const api = useContext(UserSelectedApi);
-
-  useEffect(() => {
-    fetch(`${api}`)
-      .then((res) => res.json())
-      .then((json) => setData(json));
-  }, [api]);
+  const data = useContext(UserSelectedApi);
 
   useMemo(() => {
     countriesData.features.forEach((obj) => {
@@ -38,45 +31,29 @@ export const MapCountries = () => {
     return res.join("");
   }, []);
 
-  const deleteComma = useCallback((str) => {
-    let result = [];
-    str.split("").forEach((el) => (el !== "," ? result.push(el) : null));
-    return +result.join("");
-  }, []);
-
-  if (`${api}` !== "https://covid-19.dataflowkit.com/v1") {
-    data.forEach((obj) => {
-      for (let key in obj) {
-        if (key === "country" && obj[key] === "US") {
-          obj[key] = "USA";
+  const setTotalCase = useCallback(
+    (array = [], geoObj) => {
+      return array.forEach((obj_) => {
+        if (
+          obj_.Country_text === geoObj.properties.admin ||
+          obj_.Country_text === transformLongNameCoun(geoObj.properties.admin)
+        ) {
+          geoObj.properties.total_case = obj_["Total Cases_text"];
         }
-      }
-    });
-  }
+      });
+    },
+    [data]
+  );
 
   useMemo(() => {
-    if (`${api}` === "https://covid-19.dataflowkit.com/v1") {
+    if (data.firstSource) {
       countriesData.features.forEach((obj) => {
-        data.forEach((obj_) => {
-          if (
-            obj_.Country_text === obj.properties.admin ||
-            obj_.Country_text === transformLongNameCoun(obj.properties.admin)
-          ) {
-            obj.properties.total_case = deleteComma(obj_["Total Cases_text"]);
-          }
-        });
+        setTotalCase(data.arr, obj);
       });
     } else {
       countriesData.features.forEach((obj) => {
         obj.properties.total_case = 0;
-        data.forEach((obj_) => {
-          if (
-            obj_.country === obj.properties.admin ||
-            obj_.country === transformLongNameCoun(obj.properties.admin)
-          ) {
-            obj.properties.total_case = obj_.confirmed;
-          }
-        });
+        setTotalCase(data.arr, obj);
       });
     }
   }, [data]);
@@ -96,37 +73,37 @@ export const MapCountries = () => {
           ]);
         }
 
-        function getColor(data) {
-          if (`${api}` === "https://covid-19.dataflowkit.com/v1") {
-            return data > 30000000
+        function getColor(value) {
+          if (data.firstSource) {
+            return value > 30000000
               ? "#800026"
-              : data > 5000000
+              : value > 5000000
               ? "#BD0026"
-              : data > 1000000
+              : value > 1000000
               ? "#E31A1C"
-              : data > 500000
+              : value > 500000
               ? "#FC4E2A"
-              : data > 100000
+              : value > 100000
               ? "#FD8D3C"
-              : data > 50000
+              : value > 50000
               ? "#FEB24C"
-              : data > 10000
+              : value > 10000
               ? "#FED976"
               : "#FFEDA0";
           } else {
-            return data > 500000
+            return value > 500000
               ? "#800026"
-              : data > 200000
+              : value > 200000
               ? "#BD0026"
-              : data > 100000
+              : value > 100000
               ? "#E31A1C"
-              : data > 50000
+              : value > 50000
               ? "#FC4E2A"
-              : data > 10000
+              : value > 10000
               ? "#FD8D3C"
-              : data > 2000
+              : value > 2000
               ? "#FEB24C"
-              : data > 500
+              : value > 500
               ? "#FED976"
               : "#FFEDA0";
           }

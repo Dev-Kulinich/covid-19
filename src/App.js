@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "./App.css";
 import { CovidTable } from "./components/table/index";
@@ -9,9 +9,20 @@ export const UserSelectedApi = React.createContext();
 
 function App() {
   const [userApi, setUserApi] = useState("https://covid-19.dataflowkit.com/v1");
+  const [data, setData] = useState({ arr: [], firstSource: null });
+
+  useEffect(() => {
+    fetch(`${userApi}`)
+      .then((res) => res.json())
+      .then((json) => {
+        userApi === "https://covid-19.dataflowkit.com/v1"
+          ? setData({ arr: json, firstSource: true })
+          : setData({ arr: json, firstSource: false });
+      });
+  }, [userApi]);
 
   return (
-    <UserSelectedApi.Provider value={userApi}>
+    <UserSelectedApi.Provider value={data}>
       <h2>Global Covid-19 statistics</h2>
       <ModalWindow>
         <h5>
