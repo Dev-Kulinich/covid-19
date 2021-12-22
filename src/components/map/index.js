@@ -31,19 +31,16 @@ export const MapCountries = () => {
     return res.join("");
   }, []);
 
-  const setTotalCase = useCallback(
-    (array = [], geoObj) => {
-      return array.forEach((obj_) => {
-        if (
-          obj_.Country_text === geoObj.properties.admin ||
-          obj_.Country_text === transformLongNameCoun(geoObj.properties.admin)
-        ) {
-          geoObj.properties.total_case = obj_["Total Cases_text"];
-        }
-      });
-    },
-    [data]
-  );
+  const setTotalCase = useCallback((array = [], geoObj) => {
+    return array.forEach((obj_) => {
+      if (
+        obj_.Country_text === geoObj.properties.admin ||
+        obj_.Country_text === transformLongNameCoun(geoObj.properties.admin)
+      ) {
+        geoObj.properties.total_case = obj_["Total Cases_text"];
+      }
+    });
+  }, []);
 
   useMemo(() => {
     if (data.firstSource) {
