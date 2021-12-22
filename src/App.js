@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import "./App.css";
 import { CovidTable } from "./components/table/index";
@@ -9,17 +9,80 @@ export const UserSelectedApi = React.createContext();
 
 function App() {
   const [userApi, setUserApi] = useState("https://covid-19.dataflowkit.com/v1");
-  const [data, setData] = useState({ arr: [], firstSource: null });
+  const [dirtyData, setDirtyData] = useState({ arr: [], firstSource: true });
+  const [data, setData] = useState({ arr: [], firstSource: true });
 
   useEffect(() => {
     fetch(`${userApi}`)
       .then((res) => res.json())
       .then((json) => {
         userApi === "https://covid-19.dataflowkit.com/v1"
-          ? setData({ arr: json, firstSource: true })
-          : setData({ arr: json, firstSource: false });
+          ? setDirtyData({ arr: json, firstSource: true })
+          : setDirtyData({ arr: json, firstSource: false });
       });
   }, [userApi]);
+
+  const deleteComma = useCallback((str) => {
+    let result = [];
+    str.split("").forEach((el) => (el !== "," ? result.push(el) : null));
+    return +result.join("");
+  }, []);
+
+  useEffect(() => {
+    if (dirtyData.firstSource) {
+      let array = dirtyData.arr.map((obj) => {
+        for (let key in obj) {
+          if (
+            /\,/.test(obj[key]) ||
+            /\+/.test(obj[key]) ||
+            (/\d/.test(obj[key]) && obj[key].length <= 3)
+          ) {
+            obj[key] = deleteComma(obj[key]);
+          }
+        }
+        return obj;
+      });
+      setData({ ...dirtyData, arr: array });
+    } else {
+      let array = dirtyData.arr.map((obj) => {
+        for (let key in obj) {
+          if (key === "country" && obj[key] === "United Kingdom") {
+            obj["Country_text"] = "UK";
+            delete obj[key];
+          } else if (key === "country" && obj[key] === "US") {
+            obj["Country_text"] = "USA";
+            delete obj[key];
+          } else if (key === "country") {
+            obj["Country_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "confirmed_daily") {
+            obj["New Cases_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "deaths_daily") {
+            obj["New Deaths_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "confirmed") {
+            obj["Total Cases_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "deaths") {
+            obj["Total Deaths_text"] = obj[key];
+            delete obj[key];
+          } else if (key === "date") {
+            obj["Last Update"] = obj[key].slice(0, 10) + " 00:00";
+            delete obj[key];
+          }
+        }
+        return obj;
+      });
+      let lastDataArray = [];
+      array.forEach((obj) => {
+        if (obj["Last Update"] === "2020-04-27 00:00") {
+          lastDataArray.push(obj);
+        }
+      });
+      setData({ ...dirtyData, arr: lastDataArray });
+    }
+  }, [dirtyData]);
 
   return (
     <UserSelectedApi.Provider value={data}>

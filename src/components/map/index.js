@@ -12,7 +12,7 @@ export const MapCountries = () => {
 
   const data = useContext(UserSelectedApi);
 
-  useMemo(() => {
+  useEffect(() => {
     countriesData.features.forEach((obj) => {
       for (let key in obj.properties)
         if (key !== "admin") {

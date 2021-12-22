@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useContext } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import moment from "moment";
 
 import {
@@ -21,67 +21,6 @@ export const CovidTable = () => {
   const [activeValue, setActiveValue] = useState("Total Cases_text");
 
   const data = useContext(UserSelectedApi);
-  const newDataArray = [];
-
-  const deleteComma = useCallback((str) => {
-    let result = [];
-    str.split("").forEach((el) => (el !== "," ? result.push(el) : null));
-    return +result.join("");
-  }, []);
-
-  useMemo(() => {
-    if (data.firstSource) {
-      data.arr.forEach((obj) => {
-        for (let key in obj) {
-          if (
-            /\,/.test(obj[key]) ||
-            /\+/.test(obj[key]) ||
-            (/\d/.test(obj[key]) && obj[key].length <= 3)
-          ) {
-            obj[key] = deleteComma(obj[key]);
-          }
-        }
-      });
-    } else {
-      data.arr.forEach((obj) => {
-        for (let key in obj) {
-          if (key === "country" && obj[key] === "United Kingdom") {
-            obj["Country_text"] = "UK";
-            delete obj[key];
-          } else if (key === "country" && obj[key] === "US") {
-            obj["Country_text"] = "USA";
-            delete obj[key];
-          } else if (key === "country") {
-            obj["Country_text"] = obj[key];
-            delete obj[key];
-          } else if (key === "confirmed_daily") {
-            obj["New Cases_text"] = obj[key];
-            delete obj[key];
-          } else if (key === "deaths_daily") {
-            obj["New Deaths_text"] = obj[key];
-            delete obj[key];
-          } else if (key === "confirmed") {
-            obj["Total Cases_text"] = obj[key];
-            delete obj[key];
-          } else if (key === "deaths") {
-            obj["Total Deaths_text"] = obj[key];
-            delete obj[key];
-          } else if (key === "date") {
-            obj["Last Update"] = obj[key].slice(0, 10) + " 00:00";
-            delete obj[key];
-          }
-        }
-      });
-    }
-  }, [data]);
-
-  if (!data.firstSource) {
-    data.arr.forEach((obj) => {
-      if (obj["Last Update"] === "2020-04-27 00:00") {
-        newDataArray.push(obj);
-      }
-    });
-  }
 
   const makeReversCountry = useCallback((a, b, rev, str) => {
     return rev ? (a[str] > b[str] ? -1 : 1) : a[str] > b[str] ? 1 : -1;
@@ -94,7 +33,7 @@ export const CovidTable = () => {
           .slice(1, data.arr.length - 1)
           .sort((a, b) => makeReversCountry(a, b, reverse, string));
       } else {
-        return newDataArray.sort((a, b) =>
+        return data.arr.sort((a, b) =>
           makeReversCountry(a, b, reverse, string)
         );
       }
